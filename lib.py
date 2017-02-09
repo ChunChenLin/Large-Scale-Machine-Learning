@@ -53,3 +53,29 @@ def gen_data(num_data, sigma):
     x = 2 * np.pi * (np.random.rand(num_data) - 0.5)
     y = np.sin(x) + np.random.normal(0, sigma, num_data)
     return (x, y)
+
+######### preprocessor ############
+import re
+
+def preprocessor(text):
+    text = re.sub('[0-9,]+', 'NUM', text.lower())
+    text.replace('&nbsp;', ' ')
+    
+    r = '(?::|;|=|X)(?:-)?(?:\)|\(|D|P)'
+    emoticons = re.findall(r, text)
+    text = re.sub(r, '', text)
+    
+    text = re.sub('[\W]+', ' ', text.lower()) + ' ' + ' '.join(emoticons).replace('-','')
+    return text
+
+########### stop-words ############
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+
+nltk.download('stopwords')
+eng_stop = stopwords.words('english')
+
+def tokenizer_stem_nostop(text):
+    porter = PorterStemmer()
+    return [w for w in text.split(' ') if w not in eng_stop]
